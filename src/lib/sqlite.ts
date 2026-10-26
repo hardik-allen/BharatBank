@@ -8,7 +8,12 @@ import path from "path";
 import fs from "fs";
 import type { Account } from "./db";
 
-const dataDir = path.join(process.cwd(), "data");
+// Vercel (and most serverless hosts) ship a read-only filesystem for the deployed
+// app — only /tmp is writable, and even that is wiped on cold start and isn't shared
+// across instances. So on Vercel this becomes "persists for the life of one warm
+// instance" rather than real durable storage. For real persistence in production,
+// swap this file for a hosted database (Vercel Postgres/Neon, Turso, Supabase, etc.).
+const dataDir = process.env.VERCEL ? "/tmp/data" : path.join(process.cwd(), "data");
 fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new DatabaseSync(path.join(dataDir, "bharatbank.db"));
