@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const account = getSessionAccount(req);
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     status: "submitted",
     createdAt: new Date().toISOString().slice(0, 10),
   });
+  saveAccount(account);
 
   return NextResponse.json({ ok: true });
 }

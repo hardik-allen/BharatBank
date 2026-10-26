@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const account = getSessionAccount(req);
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     amount: -payment,
     channel: "Internal",
   });
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, balance: account.balance, loan });
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { Account, nextId } from "@/lib/db";
+import { Account, nextId, saveAccount } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const account = getSessionAccount(req);
@@ -22,6 +22,7 @@ function settle(account: Account, paymentId: string) {
     amount: -payment.amount,
     channel: "UPI",
   });
+  saveAccount(account);
 }
 
 export async function POST(req: NextRequest) {
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
   } else if (outcome === "pending") {
     setTimeout(() => settle(account, id), 4000);
   }
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, payment, balance: account.balance });
 }

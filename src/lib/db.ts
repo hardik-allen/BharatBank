@@ -1,8 +1,9 @@
-// In-memory mock "backend" data — resets whenever the dev server restarts.
-// This exists only to give the demo app something realistic to call over HTTP.
-// BharatBank is a fictional demo bank. No real bank, no real money, no real KYC.
+// Backed by a local SQLite file (via Node's built-in node:sqlite — no extra dependency)
+// so data survives restarts; see lib/sqlite.ts. This is still a demo data layer, not a
+// real bank's core banking system — BharatBank is fictional, no real money moves here.
 
 import { addMonths, calcFDMaturity, calcRDMaturity } from "./interest";
+import { hasAnyAccounts, loadAllAccounts, loadIdCounter, persistAccount, persistIdCounter } from "./sqlite";
 
 export type Transaction = {
   id: string;
@@ -342,7 +343,14 @@ function createSeedAccounts(): Record<string, Account> {
   };
 }
 
-export const accounts: Record<string, Account> = globalStore.bharatbankAccounts ?? (globalStore.bharatbankAccounts = createSeedAccounts());
+function loadOrSeedAccounts(): Record<string, Account> {
+  if (hasAnyAccounts()) return loadAllAccounts();
+  const seed = createSeedAccounts();
+  Object.values(seed).forEach(persistAccount);
+  return seed;
+}
+
+export const accounts: Record<string, Account> = globalStore.bharatbankAccounts ?? (globalStore.bharatbankAccounts = loadOrSeedAccounts());
 
 export function findAccount(key: string): Account | undefined {
   return accounts[key];
@@ -352,8 +360,17 @@ export function findAccountByMobile(mobile: string): Account | undefined {
   return Object.values(accounts).find((a) => a.mobile === mobile);
 }
 
+/** Call after mutating an account (push a transaction, change balance, etc.) to persist it to disk. */
+export function saveAccount(account: Account): void {
+  persistAccount(account);
+}
+
 export function nextId(prefix: string): string {
-  globalStore.bharatbankIdCounter = (globalStore.bharatbankIdCounter ?? 100) + 1;
+  if (globalStore.bharatbankIdCounter === undefined) {
+    globalStore.bharatbankIdCounter = loadIdCounter();
+  }
+  globalStore.bharatbankIdCounter += 1;
+  persistIdCounter(globalStore.bharatbankIdCounter);
   return `${prefix}${globalStore.bharatbankIdCounter}`;
 }
 

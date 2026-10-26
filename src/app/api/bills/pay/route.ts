@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { billers, nextId } from "@/lib/db";
+import { billers, nextId, saveAccount } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const account = getSessionAccount(req);
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       channel: "Internal",
     });
   }
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, balance: account.balance, record });
 }

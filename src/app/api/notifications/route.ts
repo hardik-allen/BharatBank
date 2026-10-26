@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
+import { saveAccount } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const account = getSessionAccount(req);
@@ -15,6 +16,9 @@ export async function POST(req: NextRequest) {
 
   const { id } = await req.json();
   const notification = account.notifications.find((n) => n.id === id);
-  if (notification) notification.read = true;
+  if (notification) {
+    notification.read = true;
+    saveAccount(account);
+  }
   return NextResponse.json({ ok: true });
 }

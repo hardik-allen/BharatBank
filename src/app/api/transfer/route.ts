@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 const METHODS = {
   UPI: { fee: 0, eta: "Instant", minAmount: 1 },
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       channel: method,
     });
   }
+  saveAccount(account);
 
   return NextResponse.json({
     ok: true,

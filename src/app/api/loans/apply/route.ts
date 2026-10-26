@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { loanProducts, nextId } from "@/lib/db";
+import { loanProducts, nextId, saveAccount } from "@/lib/db";
 import { addMonths, calcEmi } from "@/lib/interest";
 
 export async function POST(req: NextRequest) {
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       status: "active",
     });
   }
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, eligible, emi, applicationId });
 }

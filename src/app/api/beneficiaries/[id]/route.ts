@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
+import { saveAccount } from "@/lib/db";
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const account = getSessionAccount(req);
@@ -10,5 +11,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (index === -1) return NextResponse.json({ error: "Beneficiary not found" }, { status: 404 });
 
   account.beneficiaries.splice(index, 1);
+  saveAccount(account);
   return NextResponse.json({ ok: true, beneficiaries: account.beneficiaries });
 }

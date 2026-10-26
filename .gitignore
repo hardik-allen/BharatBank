@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local sqlite data (lib/sqlite.ts) — demo data only, never commit
+/data/*.db
+/data/*.db-*

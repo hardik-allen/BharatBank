@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 const PREMATURE_PENALTY_RATE = 0.01;
 
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     description: isPremature ? "Recurring Deposit closed (premature)" : "Recurring Deposit matured",
     amount: payout,
   });
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, balance: account.balance, payout });
 }

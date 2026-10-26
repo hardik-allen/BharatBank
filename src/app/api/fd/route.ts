@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 import { addMonths, calcFDMaturity } from "@/lib/interest";
 
 const FD_RATE_PERCENT = 7.1;
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     amount: -amount,
     channel: "Internal",
   });
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, balance: account.balance, fixedDeposits: account.fixedDeposits });
 }

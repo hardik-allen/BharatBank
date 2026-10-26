@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 const LABELS: Record<string, string> = {
   cheque_book: "Cheque book request",
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     status: "submitted",
     createdAt: new Date().toISOString().slice(0, 10),
   });
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, serviceRequests: account.serviceRequests });
 }

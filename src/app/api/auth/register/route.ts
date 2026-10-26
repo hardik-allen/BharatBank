@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { accounts, findAccountByMobile, maskAccountNumber, nextId } from "@/lib/db";
+import { accounts, findAccountByMobile, maskAccountNumber, nextId, saveAccount } from "@/lib/db";
 import { verifyOtp } from "@/lib/otp";
 import { COOKIE_NAME, encodeSession } from "@/lib/session";
 
@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
       { id: nextId("n"), title: "Welcome to BharatBank", body: "Your account is ready to use.", date: new Date().toISOString().slice(0, 10), read: false },
     ],
   };
+  saveAccount(accounts[mobile]);
 
   const token = encodeSession({ username: mobile, issuedAt: Date.now() });
   const res = NextResponse.json({ ok: true });

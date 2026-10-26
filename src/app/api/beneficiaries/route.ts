@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAccount } from "@/lib/auth";
-import { nextId } from "@/lib/db";
+import { nextId, saveAccount } from "@/lib/db";
 
 function withComputedStatus<T extends { activatesAt: string }>(b: T) {
   return { ...b, status: new Date(b.activatesAt) <= new Date() ? "active" : "pending" };
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     activatesAt,
   };
   account.beneficiaries.push(beneficiary);
+  saveAccount(account);
 
   return NextResponse.json({ ok: true, beneficiaries: account.beneficiaries.map(withComputedStatus) });
 }
